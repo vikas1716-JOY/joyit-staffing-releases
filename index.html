@@ -2211,25 +2211,33 @@ var WCDB={
 };
 
 function buildComplianceTable(){
-  var t=document.getElementById('compliance-tbody');if(!t)return;
+  var t=document.getElementById('compliance-tbody');
+  if(!t)return;
   var rc={'Low':'#198754','Medium':'#856404','High':'#dc3545','Very High':'#6f2232'};
   var rb={'Low':'#d1e7dd','Medium':'#fff3cd','High':'#f8d7da','Very High':'#f1c0c9'};
-  var h='';var i=0;
-  Object.entries(WCDB).forEach(function(e){var k=e[0];var d=e[1];
+  t.innerHTML='';
+  var keys=Object.keys(WCDB);
+  for(var i=0;i<keys.length;i++){
+    var k=keys[i]; var d=WCDB[k];
     var bg=i%2===0?'#fff':'#f8fbff';
     var pc=d.total>30?'#dc3545':d.total>15?'#856404':'#198754';
-    var mw=typeof d.mw==='number'?'$'+d.mw.toLocaleString():d.mw;
-    h+='<tr id="crow-'+k+'" style="background:'+bg+';cursor:pointer;" onclick="selectCRow(''+k+'')" onmouseover="this.style.background='#e8f0fe'" onmouseout="this.style.background=''+bg+''">'
-      +'<td style="padding:7px 10px;font-weight:700;white-space:nowrap;">'+d.name+'</td>'
+    var mw=typeof d.mw==='number'?'$'+d.mw.toLocaleString():String(d.mw);
+    var tr=document.createElement('tr');
+    tr.id='crow-'+k; tr.style.background=bg; tr.style.cursor='pointer';
+    tr.setAttribute('data-code',k); tr.setAttribute('data-bg',bg);
+    tr.innerHTML='<td style="padding:7px 10px;font-weight:700;white-space:nowrap;">'+d.name+'</td>'
       +'<td style="padding:7px 10px;color:#3a5c8c;font-size:10px;">'+d.pension+'</td>'
       +'<td style="padding:7px 10px;color:#3a5c8c;font-size:10px;">'+d.health+'</td>'
       +'<td style="padding:7px 10px;color:#3a5c8c;font-size:10px;">'+d.unemp+'</td>'
       +'<td style="padding:7px 10px;text-align:center;font-weight:800;color:'+pc+';">'+d.total+'%</td>'
       +'<td style="padding:7px 10px;font-size:10px;">'+d.leave+'</td>'
       +'<td style="padding:7px 10px;font-weight:600;font-size:10px;">'+mw+'</td>'
-      +'<td style="padding:7px 10px;text-align:center;"><span style="font-size:10px;font-weight:700;padding:2px 6px;border-radius:12px;background:'+rb[d.risk]+';color:'+rc[d.risk]+';">'+d.risk+'</span></td>'
-      +'</tr>';i++;});
-  t.innerHTML=h;
+      +'<td style="padding:7px 10px;text-align:center;"><span style="font-size:10px;font-weight:700;padding:2px 6px;border-radius:12px;background:'+rb[d.risk]+';color:'+rc[d.risk]+';">'+d.risk+'</span></td>';
+    tr.addEventListener('mouseover',function(){this.style.background='#e8f0fe';});
+    tr.addEventListener('mouseout',function(){this.style.background=this.getAttribute('data-bg');});
+    (function(code){tr.addEventListener('click',function(){selectCRow(code);});})(k);
+    t.appendChild(tr);
+  }
 }
 function selectCRow(code){var s=document.getElementById('compliance-country');if(s)s.value=code;applyCountryCompliance();}
 function applyCountryCompliance(){
