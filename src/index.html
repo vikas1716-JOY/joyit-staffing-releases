@@ -918,16 +918,7 @@ footer {
 
       <div class="field mb-16" style="margin-bottom:14px;">
         <label>Currency <span class="help" data-tip="Choose the currency for all cost fields">?</span></label>
-        <select id="mg-cur" onchange="updateMgSymbols(); calcMargin()">
-          <option value="IDR">🇮🇩 IDR — Indonesian Rupiah (Rp)</option>
-          <option value="INR" selected>🇮🇳 INR — Indian Rupee (₹)</option>
-          <option value="SGD">🇸🇬 SGD — Singapore Dollar (S$)</option>
-          <option value="USD">🇺🇸 USD — US Dollar ($)</option>
-          <option value="EUR">🇪🇺 EUR — Euro (€)</option>
-          <option value="GBP">🇬🇧 GBP — British Pound (£)</option>
-          <option value="AUD">🇦🇺 AUD — Australian Dollar (A$)</option>
-          <option value="MYR">🇲🇾 MYR — Malaysian Ringgit (RM)</option>
-        </select>
+        <select id="mg-cur" onchange="updateMgSymbols(); calcMargin()"></select>
       </div>
 
       <div class="field" style="margin-bottom:14px;">
@@ -1454,14 +1445,17 @@ function el(id) { return document.getElementById(id); }
 (function populateCurrencySelects() {
   const from = el('cc-from');
   const to   = el('cc-to');
+  const mg   = el('mg-cur');
   CURRENCIES.forEach(c => {
     const opt1 = new Option(`${c.flag} ${c.code} — ${c.name}`, c.code);
     const opt2 = new Option(`${c.flag} ${c.code} — ${c.name}`, c.code);
     from.add(opt1);
     to.add(opt2);
+    if (mg) mg.add(new Option(`${c.flag} ${c.code} — ${c.name} (${c.sym})`, c.code));
   });
   from.value = 'USD';
   to.value   = 'IDR';
+  if (mg) { mg.value = 'INR'; }
 })();
 
 /* ── FETCH LIVE RATES ── */
@@ -1612,7 +1606,7 @@ function swapCurrencies() {
 }
 
 /* ── MARGIN SYMBOLS ── */
-const MG_SYMS = {IDR:'Rp',INR:'₹',SGD:'S$',USD:'$',EUR:'€',GBP:'£',AUD:'A$',MYR:'RM'};
+const MG_SYMS = Object.fromEntries(CURRENCIES.map(c => [c.code, c.sym]));
 const MG_DEC  = {IDR:0,INR:0,SGD:2,USD:2,EUR:2,GBP:2,AUD:2,MYR:2};
 
 function updateMgSymbols() {
@@ -2257,8 +2251,6 @@ function downloadReport(){
   var now=new Date();
   var dateStr=now.toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});
   var timeStr=now.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
-  var w=window.open('','_blank');
-  if(!w){alert('Please allow pop-ups to download the report.');return;}
   var html='<!DOCTYPE html><html><head><meta charset="utf-8"><title>JoyIT Staffing Report</title>'+
 '<style>*{margin:0;padding:0;box-sizing:border-box;}body{font-family:Arial,sans-serif;color:#1a2b3c;padding:40px;font-size:13px;line-height:1.5;}'+
 '.hd{border-bottom:3px solid #0a66c2;padding-bottom:16px;margin-bottom:24px;display:flex;justify-content:space-between;align-items:flex-end;}'+
@@ -2311,7 +2303,16 @@ function downloadReport(){
 '<div class="note"><b>Disclaimer:</b> Figures are indicative estimates for planning only — not legal, tax, or financial advice. Verify with a qualified local professional before making hiring decisions.</div>'+
 '<div class="foot">JoyIT Staffing · '+dateStr+' '+timeStr+' · vikas1716-joy.github.io/joyit-staffing-releases</div>'+
 '</body></html>';
-  w.document.write(html);w.document.close();
+  var blob=new Blob([html],{type:'text/html;charset=utf-8'});
+  var url=URL.createObjectURL(blob);
+  var fname='JoyIT-Staffing-Report-'+now.toISOString().slice(0,10)+'.html';
+  var a=document.createElement('a');
+  a.href=url; a.download=fname;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(function(){URL.revokeObjectURL(url);},1500);
+  alert('Report downloaded: '+fname+'\n\nOpen it, then press Ctrl+P → "Save as PDF".');
 }
 
 function downloadReportCSV(){
