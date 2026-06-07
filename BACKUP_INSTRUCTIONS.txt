@@ -1,0 +1,34 @@
+===========================================
+JOYIT STAFFING SUITE — BACKUP GUIDE
+===========================================
+
+LIVE SITE:
+https://vikas1716-joy.github.io/joyit-staffing-releases/
+
+GITHUB REPO (source code):
+https://github.com/vikas1716-JOY/joyit-staffing-releases
+
+KEY FILES:
+- index.html      → Main application (all features)
+- compliance.json → Country compliance data (update when laws change)
+- LICENSE         → Legal protection
+- README.md       → Documentation
+
+HOW TO UPDATE COMPLIANCE DATA:
+1. Go to repo → compliance.json → pencil icon
+2. Edit the country entry
+3. Update "last_updated" field
+4. Commit changes
+5. App auto-updates on next user visit
+
+HOW TO PUSH UPDATES (if laptop crashes):
+1. Go to github.com/settings/tokens
+2. Generate new token (repo scope, 1 day expiry)
+3. Share with Claude AI to push files
+4. Delete token immediately after
+
+GOOGLE DRIVE BACKUP LOCATION:
+[Set your Google Drive folder path here after uploading]
+
+LAST BACKUP DATE: June 7, 2026
+===========================================
