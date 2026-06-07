@@ -1,6 +1,6 @@
 {
   "name": "joyit-staffing",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "JoyIT Staffing Intelligence Suite — Currency Converter, Payroll Margin Calculator & World Compliance",
   "main": "main.js",
   "author": {
@@ -31,7 +31,9 @@
       "target": [
         {
           "target": "nsis",
-          "arch": ["x64"]
+          "arch": [
+            "x64"
+          ]
         }
       ],
       "icon": "assets/icon.ico",
@@ -52,7 +54,10 @@
       "target": [
         {
           "target": "dmg",
-          "arch": ["x64", "arm64"]
+          "arch": [
+            "x64",
+            "arm64"
+          ]
         }
       ],
       "icon": "assets/icon.icns",
@@ -62,10 +67,20 @@
     "dmg": {
       "title": "JoyIT Staffing Suite",
       "icon": "assets/icon.icns"
-    }
+    },
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "vikas1716-JOY",
+        "repo": "joyit-staffing-releases"
+      }
+    ]
   },
   "devDependencies": {
     "electron": "^28.0.0",
     "electron-builder": "^24.9.1"
+  },
+  "dependencies": {
+    "electron-updater": "^6.1.7"
   }
 }

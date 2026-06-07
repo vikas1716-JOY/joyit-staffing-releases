@@ -1,8 +1,58 @@
-const { app, BrowserWindow, shell, Menu } = require('electron');
+const { app, BrowserWindow, shell, Menu, dialog } = require('electron');
 const path = require('path');
+const { autoUpdater } = require('electron-updater');
 
 // Keep window reference
 let mainWindow;
+
+// ─────────────────────────────────────────────
+//  AUTO-UPDATE (checks GitHub Releases on startup)
+// ─────────────────────────────────────────────
+let updatePromptShown = false;
+
+function setupAutoUpdates() {
+  // Don't auto-download until we've told the user / they agree implicitly
+  autoUpdater.autoDownload = true;
+  autoUpdater.autoInstallOnAppQuit = true;
+
+  autoUpdater.on('update-available', (info) => {
+    // A newer version exists on GitHub — it will download in the background
+    if (mainWindow) {
+      mainWindow.webContents.executeJavaScript(
+        "console.log('JoyIT: update available, downloading...');"
+      ).catch(() => {});
+    }
+  });
+
+  autoUpdater.on('update-downloaded', (info) => {
+    if (updatePromptShown) return;
+    updatePromptShown = true;
+    dialog.showMessageBox(mainWindow, {
+      type: 'info',
+      title: 'Update Available',
+      message: 'A new version of JoyIT Staffing Suite is ready.',
+      detail: 'Version ' + (info && info.version ? info.version : '') +
+        ' has been downloaded. Restart now to install the update?',
+      buttons: ['Restart Now', 'Later'],
+      defaultId: 0,
+      cancelId: 1
+    }).then((result) => {
+      if (result.response === 0) {
+        autoUpdater.quitAndInstall();
+      }
+    }).catch(() => {});
+  });
+
+  autoUpdater.on('error', (err) => {
+    // Fail silently — never block the app if update check fails (e.g. offline)
+    console.log('JoyIT auto-update check skipped:', err && err.message ? err.message : err);
+  });
+
+  // Check shortly after launch so it doesn't slow startup
+  setTimeout(() => {
+    autoUpdater.checkForUpdates().catch(() => {});
+  }, 4000);
+}
 
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -10,7 +60,7 @@ function createWindow() {
     height: 820,
     minWidth: 900,
     minHeight: 600,
-    icon: path.join(__dirname, 'assets', 'icon.png'),
+    icon: path.join(__dirname, 'assets', 'icon.ico'),
     title: 'JoyIT Staffing Intelligence Suite',
     webPreferences: {
       nodeIntegration: false,
@@ -73,7 +123,6 @@ const menuTemplate = [
     label: 'Help',
     submenu: [
       { label: 'About JoyIT Staffing Suite', click: () => {
-        const { dialog } = require('electron');
         dialog.showMessageBox(mainWindow, {
           type: 'info',
           title: 'JoyIT Staffing Intelligence Suite',
@@ -90,6 +139,7 @@ app.whenReady().then(() => {
   const menu = Menu.buildFromTemplate(menuTemplate);
   Menu.setApplicationMenu(menu);
   createWindow();
+  setupAutoUpdates();
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
