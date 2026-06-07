@@ -814,7 +814,7 @@ footer {
 
   <div class="section-header">
     <h2>Currency Converter</h2>
-    <p>Live exchange rates — auto-updates every 5 minutes. Supports 30+ world currencies.</p>
+    <p>Live exchange rates — auto-updates every 30 minutes. Supports 30+ world currencies.</p>
   </div>
 
   <!-- Main converter card -->
@@ -1042,6 +1042,13 @@ footer {
       <div style="min-width:90px;">
         <div style="font-size:10px;color:#5f7080;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px;">📊 Risk</div>
         <div id="cb-risk" style="font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px;display:inline-block;"></div>
+      </div>
+      <div style="min-width:130px;">
+        <div style="font-size:10px;color:#5f7080;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px;">🔗 Official Source</div>
+        <a id="cb-official-url" href="#" target="_blank" rel="noopener" style="font-size:11px;color:#0a66c2;font-weight:600;text-decoration:none;display:inline-block;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="">View Official Site ↗</a>
+      </div>
+      <div style="width:100%;margin-top:4px;">
+        <span id="compliance-data-freshness" style="font-size:10px;color:#8a99a8;"></span>
       </div>
     </div>
 
@@ -1405,7 +1412,7 @@ const FALLBACK_RATES = {
   NOK:10.6, SEK:10.4,
 };
 
-const AUTO_REFRESH_SEC = 300; // 5 minutes
+const AUTO_REFRESH_SEC = 1800; // 30 minutes
 
 /* ── STATE ── */
 let rates = {};
@@ -1492,7 +1499,10 @@ async function fetchRates() {
           aud:'AUD', cad:'CAD', chf:'CHF', cny:'CNY', myr:'MYR', thb:'THB', php:'PHP',
           vnd:'VND', aed:'AED', sar:'SAR', qar:'QAR', hkd:'HKD', krw:'KRW', brl:'BRL',
           zar:'ZAR', nzd:'NZD', mxn:'MXN', try:'TRY', pkr:'PKR', bdt:'BDT', egp:'EGP',
-          nok:'NOK', sek:'SEK', usd:'USD' };
+          nok:'NOK', sek:'SEK', usd:'USD',
+          dkk:'DKK', pln:'PLN', czk:'CZK', huf:'HUF', ron:'RON', rub:'RUB', uah:'UAH',
+          ils:'ILS', kwd:'KWD', bhd:'BHD', omr:'OMR', jod:'JOD', lkr:'LKR', npr:'NPR',
+          twd:'TWD', kes:'KES', ngn:'NGN', ghs:'GHS', ars:'ARS', clp:'CLP', cop:'COP' };
         for (const [k, v] of Object.entries(keyMap)) { if (raw[k]) mapped[v] = raw[k]; }
         mapped.USD = 1;
         return { rates: mapped, date: data.date || new Date().toISOString().slice(0,10), source: 'jsdelivr/fawazahmed0' };
@@ -1511,7 +1521,7 @@ async function fetchRates() {
       isLive   = true;
       el('cc-status-badge').className   = 'badge badge-green';
       el('cc-status-badge').textContent = '● Live';
-      el('cc-rate-meta').textContent    = `Rates as of ${rateDate} · auto-updates every 5 min · source: ${s}`;
+      el('cc-rate-meta').textContent    = `Rates as of ${rateDate} · auto-updates every 30 min · source: ${s}`;
       const now = new Date();
       el('last-update-text').textContent = `Updated ${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`;
       success = true;
@@ -1802,7 +1812,7 @@ const MODAL_CONTENT = {
       <h4>Joy IT Solutions — Staffing Calculator</h4>
       <p>A professional-grade web tool built for the staffing and recruitment team at Joy IT Solutions. Combines live currency conversion with payroll margin analysis in a single, easy-to-use interface.</p>
       <h4>Features</h4>
-      <p>• Live exchange rates — auto-updates every 5 minutes<br/>• 30+ world currencies including IDR, INR, SGD<br/>• Payroll margin calculator for candidate onboarding<br/>• Supports hourly, daily, monthly, and annual billing<br/>• Target rate finder — enter desired margin, get the bill rate<br/>• Fully offline-capable with fallback rates<br/>• Mobile-friendly responsive design</p>
+      <p>• Live exchange rates — auto-updates every 30 minutes<br/>• 30+ world currencies including IDR, INR, SGD<br/>• Payroll margin calculator for candidate onboarding<br/>• Supports hourly, daily, monthly, and annual billing<br/>• Target rate finder — enter desired margin, get the bill rate<br/>• Fully offline-capable with fallback rates<br/>• Mobile-friendly responsive design</p>
       <h4>Version</h4>
       <p>v2.0 — June 2026<br/>Built for Joy IT Solutions internal use.</p>
       <h4>Exchange rate source</h4>
@@ -2251,16 +2261,68 @@ function applyCountryCompliance(){
   st('cb-maternity',d.mat); st('cb-overtime',d.ot);
   var re=document.getElementById('cb-risk');
   if(re){var rs={'Low':{b:'#d1e7dd',c:'#0a3622'},'Medium':{b:'#fff3cd',c:'#664d03'},'High':{b:'#f8d7da',c:'#58151c'},'Very High':{b:'#f1c0c9',c:'#3b0a13'}}[d.risk]||{b:'#fff3cd',c:'#664d03'};re.style.background=rs.b;re.style.color=rs.c;re.textContent=d.risk+' Risk';}
+  /* Official URL link */
+  var ua=document.getElementById('cb-official-url');
+  if(ua&&d.official_url){ua.href=d.official_url;ua.title='Open official government source: '+d.official_url;ua.style.opacity='1';}
+  else if(ua){ua.href='#';ua.style.opacity='0.4';}
   Object.keys(WCDB).forEach(function(c,idx){var r=document.getElementById('crow-'+c);if(r){r.style.outline=c===s.value?'2px solid var(--joy-blue)':'none';r.style.background=c===s.value?'#dbeafe':idx%2===0?'#fff':'#f8fbff';}});
   calcMargin();
 }
 buildComplianceTable();
 applyCountryCompliance();
 
+/* ── COMPLIANCE JSON FETCH ── */
+/* Fetches compliance.json from your gh-pages repo. To update rules for any
+   country, edit compliance.json in your repo and commit — the app picks it
+   up automatically on next page load. */
+const COMPLIANCE_JSON_URL = 'https://raw.githubusercontent.com/vikas1716-JOY/joyit-staffing-releases/gh-pages/compliance.json';
+
+async function fetchComplianceData() {
+  try {
+    const res = await fetch(COMPLIANCE_JSON_URL + '?t=' + Date.now(), { cache: 'no-cache' });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    let updated = false;
+    /* Merge each country entry into WCDB, preserving any keys not in JSON */
+    Object.keys(data).forEach(function(code) {
+      if (code === '_meta') return; // skip metadata block
+      if (WCDB[code]) {
+        Object.assign(WCDB[code], data[code]); // update existing country
+        updated = true;
+      }
+      // If a brand-new country is added to the JSON, add it to WCDB too
+      else if (data[code] && data[code].name) {
+        WCDB[code] = data[code];
+        updated = true;
+      }
+    });
+    if (updated) {
+      /* Refresh UI with latest data */
+      buildComplianceTable();
+      applyCountryCompliance();
+      /* Show freshness badge */
+      const meta = data._meta || {};
+      const freshEl = document.getElementById('compliance-data-freshness');
+      if (freshEl) {
+        freshEl.textContent = meta.last_updated
+          ? '✅ Compliance data last updated: ' + meta.last_updated + ' — fetched from GitHub'
+          : '✅ Compliance data loaded from GitHub';
+      }
+    }
+  } catch (e) {
+    /* Silently fall back to built-in data — no disruption to user */
+    const freshEl = document.getElementById('compliance-data-freshness');
+    if (freshEl) freshEl.textContent = '⚠ Using built-in compliance data (offline or GitHub unreachable)';
+  }
+}
+
 /* ── INIT ── */
 updateMgSymbols();
 switchBilling();
+rates = { ...FALLBACK_RATES };
+convertCurrency();
 fetchRates();
+fetchComplianceData(); /* load latest compliance.json from GitHub */
 </script>
 
 </body>
