@@ -1,0 +1,35 @@
+JoyIT Staffing Intelligence Suite
+==================================
+CONFIDENTIAL - INTERNAL USE ONLY
+Copyright 2026 Joy IT Solutions. All rights reserved.
+
+INSTALLATION - WINDOWS
+-----------------------
+1. Extract this folder anywhere (e.g. C:\JoyIT or your Desktop)
+2. Right-click "Setup-Windows.ps1" -> Run with PowerShell
+   (This creates a Desktop shortcut)
+3. Double-click "JoyIT Staffing Suite" on your Desktop
+
+OR simply double-click "Launch-JoyIT.bat" directly - no setup needed.
+
+INSTALLATION - MAC
+------------------
+1. Copy this folder anywhere (e.g. Applications or Desktop)
+2. Double-click "Launch-JoyIT.command" to open the app
+
+FEATURES
+--------
+- Currency Converter (51 currencies, live rates every 30 min)
+- Payroll Margin Calculator with employer compliance costs
+- 20-country compliance data (auto-updated from server)
+- Download Report PDF + Export CSV
+- World Clock (36 cities)
+
+UPDATING
+--------
+When an update is released, simply replace index.html in this folder.
+All other files stay the same.
+
+SUPPORT
+-------
+Contact: Joy IT Solutions management
